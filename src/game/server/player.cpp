@@ -552,11 +552,10 @@ bool CPlayer::CatchPlayer(int ID, int reason)
 
 		// statistics
 		m_Kills++;
-        if (reason == REASON_PLAYER_JOINED)
-            if (g_Config.m_SvKillIncreasing == 0)
-                m_Score += g_Config.m_SvKillScore;
-            else
-                m_Score += g_Config.m_SvKillScore * GameServer()->m_apPlayers[ID]->GetNumCurrentlyCaughtPlayers();
+        if (g_Config.m_SvKillIncreasing == 0)
+            m_Score += g_Config.m_SvKillScore;
+        else
+            m_Score += floor(g_Config.m_SvKillScore * sqrt(GameServer()->m_apPlayers[ID]->GetNumCurrentlyCaughtPlayers() + 1));
 
 		if(reason)
 		{

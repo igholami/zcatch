@@ -1070,6 +1070,7 @@ int CGameControllerZCATCH::OnCharacterDeath(class CCharacter *pVictim, class CPl
 			{
 				// nothing todo here
 			}
+            victim.m_Score -= g_Config.m_SvSuicidePenalty * g_Config.m_SvDeathScore;
 
 			// no need to release anyone, as nobody is being caught in warmup
 		}
@@ -1148,7 +1149,7 @@ int CGameControllerZCATCH::OnCharacterDeath(class CCharacter *pVictim, class CPl
 	if(pKiller == pVictim->GetPlayer())
 	{
 		// suicide or falling out of the map
-		if (Weapon == WEAPON_WORLD || (Weapon == WEAPON_SELF && victim.GetNumCurrentlyCaughtPlayers() == 0))
+		if (victim.GetNumCurrentlyCaughtPlayers() == 0))
 		{
 			victim.m_Deaths += g_Config.m_SvSuicidePenalty;
             victim.m_Score -= g_Config.m_SvSuicidePenalty * g_Config.m_SvDeathScore;
