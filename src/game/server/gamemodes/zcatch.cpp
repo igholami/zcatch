@@ -1149,7 +1149,7 @@ int CGameControllerZCATCH::OnCharacterDeath(class CCharacter *pVictim, class CPl
 	if(pKiller == pVictim->GetPlayer())
 	{
 		// suicide or falling out of the map
-		if (victim.GetNumCurrentlyCaughtPlayers() == 0))
+		if (victim.GetNumCurrentlyCaughtPlayers() == 0)
 		{
 			victim.m_Deaths += g_Config.m_SvSuicidePenalty;
             victim.m_Score -= g_Config.m_SvSuicidePenalty * g_Config.m_SvDeathScore;
