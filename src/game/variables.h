@@ -146,6 +146,7 @@ MACRO_CONFIG_INT(SvSuicidePenalty, sv_suicide_penalty, 5, 0, 50, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(SvSuicideCooldown, sv_suicide_cooldown, 15, 3, 60, CFGFLAG_SERVER, "How long a player needs to wait before it is able to do anoter suicide.")
 MACRO_CONFIG_INT(SvKillScore, sv_kill_score, 1, 0, 50, CFGFLAG_SERVER, "How much a kill worth")
 MACRO_CONFIG_INT(SvDeathScore, sv_death_score, 1, 0, 50, CFGFLAG_SERVER, "How much a death cost")
+MACRO_CONFIG_INT(SvWinScore, sv_win_score, 1, 0, 50, CFGFLAG_SERVER, "How much a win worth")
 MACRO_CONFIG_INT(SvKillIncreasing, sv_kill_increasing, 1, 0,1, CFGFLAG_SERVER, "How important a kill is")
 
 MACRO_CONFIG_INT(SvGrenadeHitbox, sv_grenade_hitbox, 3, 1, 6, CFGFLAG_SERVER, "How large is the grenade hitbox(explosion radius).")

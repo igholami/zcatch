@@ -829,7 +829,8 @@ void CGameControllerZCATCH::DoWincheckRound()
 			if(m_pRankingServer)
 			{
 				// player that is alive is the winnner
-				int ScorePointsEarned = CalculateScore(pAlivePlayer->GetNumTotalCaughtPlayers());
+				// int ScorePointsEarned = CalculateScore(pAlivePlayer->GetNumTotalCaughtPlayers());
+                int ScorePointsEarned = ceil(g_Config.m_SvWinScore * pow(pAlivePlayer->GetNumTotalCaughtPlayers(), 1.5));
 
 				pAlivePlayer->m_Score += ScorePointsEarned;
 				pAlivePlayer->m_Wins++;
