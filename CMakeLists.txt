@@ -1023,6 +1023,41 @@ set(EXPECTED_DATA
   mapres/winter_mountains.png
   mapres/winter_mountains2.png
   mapres/winter_mountains3.png
+  maps/zoocatch.map
+  maps/ctf5_midnight.map
+  maps/ctf8.map
+  maps/ctf5.1_bubblegum.map
+  maps/ctf_mars.map
+  maps/elevation.map
+  maps/dm7.map
+  maps/ctf3.map
+  maps/ctf6.map
+  maps/ctf5.1_rainbow.map
+  maps/ctf5_carribbean.map
+  maps/ctf4_old.map
+  maps/ctf4_classic.map
+  maps/ctf5.1_crimson.map
+  maps/ctf1.map
+  maps/ctf_planet.map
+  maps/ctf7.map
+  maps/ctf_moon.map
+  maps/dm6.map
+  maps/dm1.map
+  maps/ctf5_dark_candys.map
+  maps/ctf_tantum.map
+  maps/ctf4.map
+  maps/openfng5.map
+  maps/ctf5.1.map
+  maps/dm2.map
+  maps/dm8.map
+  maps/ctf_lava.map
+  maps/ctf5.map
+  maps/ctf5_light_candys.map
+  maps/ctf2.map
+  maps/lms1.map
+  maps/ctf5_space.map
+  maps/dm9.map
+  maps/ctf5_mystic.map
   maps/ctf1.map
   maps/ctf2.map
   maps/ctf3.map

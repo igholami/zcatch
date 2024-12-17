@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 
 extern const char *GIT_VERSION;
 extern const char *GIT_SHORTREV_HASH;
@@ -53,6 +54,12 @@ CGameControllerZCATCH::CGameControllerZCATCH(CGameContext *pGameServer) : IGameC
 			return;
 		}
 
+        bool all = Nickname == "_ALL_";
+
+        std::vector<CPlayer*> IngamePlayers;
+        std::vector<std::string> Nicknames;
+        std::vector<int> IngameIDs;
+
 		CPlayer* pIngamePlayer = nullptr;
 		int IngameID = -1;
 		auto RequestedNickCString = Nickname.c_str();
@@ -60,98 +67,106 @@ CGameControllerZCATCH::CGameControllerZCATCH(CGameContext *pGameServer) : IGameC
 		// check if nickname is online
 		for (int ID : GameServer()->PlayerIDs())
 		{
-			if (!strcmp(RequestedNickCString, Server()->ClientName(ID)))
+			if (all || !strcmp(RequestedNickCString, Server()->ClientName(ID)))
 			{	
 				pIngamePlayer = GameServer()->m_apPlayers[ID];
 				if (pIngamePlayer)
 				{
+                    Nickname = Server()->ClientName(ID);
 					IngameID = ID;
+
+                    IngamePlayers.push_back(pIngamePlayer);
+                    Nicknames.push_back(Nickname);
+                    IngameIDs.push_back(IngameID);
 				}		
 			}
 		}
-		
 
-		// completely removes the player from the database.
-		if (Type == CRankDeletionRequest::DELETION) 
-		{
-			// delete database stats
-			m_pRankingServer->DeleteRanking(Nickname, GetDatabasePrefix());
+        for (size_t i = 0; i < IngamePlayers.size(); i++) {
+            pIngamePlayer = IngamePlayers[i];
+            Nickname = Nicknames[i];
+            IngameID = IngameIDs[i];
 
-			if(!pIngamePlayer) 
-			{
-				return;
-			}
-
-			// reset ingame stats
-			pIngamePlayer->m_Kills = 0;
-			pIngamePlayer->m_Deaths = 0;
-			pIngamePlayer->m_TicksCaught = 0;
-			pIngamePlayer->m_TicksIngame = 0;
-			pIngamePlayer->m_TicksWarmup = 0;
-			pIngamePlayer->m_Score = 0;
-			pIngamePlayer->m_Wins = 0;
-			pIngamePlayer->m_Fails = 0;
-			pIngamePlayer->m_Shots = 0;
-			return;
-		}
+            // if the nickname is not online,
+            // we can only delete the database stats
 
 
-		// stats are valid by default
-		CPlayerStats ingameStats;
+            // completely removes the player from the database.
+            if (Type == CRankDeletionRequest::DELETION) {
+                // delete database stats
+                m_pRankingServer->DeleteRanking(Nickname, GetDatabasePrefix());
 
-		if (!pIngamePlayer) {
-			// player stats are invalid because player is offline
-			ingameStats.Invalidate();
-		} else {
-			// player stats are valid
-			ingameStats["Kills"] = pIngamePlayer->m_Kills;
-			ingameStats["Deaths"] = pIngamePlayer->m_Deaths;
-			ingameStats["TicksCaught"] = pIngamePlayer->m_TicksCaught;
-			ingameStats["TicksIngame"] = pIngamePlayer->m_TicksIngame;
-			ingameStats["TicksWarmup"] = pIngamePlayer->m_TicksWarmup;
-			ingameStats["Score"] = pIngamePlayer->m_Score;
-			ingameStats["Wins"] = pIngamePlayer->m_Wins;
-			ingameStats["Fails"] = pIngamePlayer->m_Fails;
-			ingameStats["Shots"] = pIngamePlayer->m_Shots;
-		}
+                if (!pIngamePlayer) {
+                    return;
+                }
 
-		// requires individual player data
-		m_pRankingServer->GetRanking(
-			Nickname, 
-			[this, IngameID, ingameStats, Type, Nickname](CPlayerStats& stats)
-			{	
-				// ingame stats are more up to date compared to database stats
-				if (ingameStats.IsValid())
-				{
-					stats = ingameStats;
-				}
-				
-				// manipulate player's stats
-				switch (Type)
-				{
-				case CRankDeletionRequest::SCORE_AND_WIN_RESET:
-					stats["Wins"] = 0;
-					[[fallthrough]];
-				case CRankDeletionRequest::SCORE_RESET:
-					stats["Score"] = 0;
-					break;
-				default:
-					break;
-				}
+                // reset ingame stats
+                pIngamePlayer->m_Kills = 0;
+                pIngamePlayer->m_Deaths = 0;
+                pIngamePlayer->m_TicksCaught = 0;
+                pIngamePlayer->m_TicksIngame = 0;
+                pIngamePlayer->m_TicksWarmup = 0;
+                pIngamePlayer->m_Score = 0;
+                pIngamePlayer->m_Wins = 0;
+                pIngamePlayer->m_Fails = 0;
+                pIngamePlayer->m_Shots = 0;
+                return;
+            }
 
-				// update ingame player's stats if online
-				if (IngameID >= 0)
-				{	
-					// do not add, but explicitly set values.
-					stats.SetHandlingMode(CPlayerStats::STATS_UPDATE_SET);
-					std::lock_guard<std::mutex> lock(m_RankingRetrievalMessageQueueMutex);
-					m_RankingRetrievalMessageQueue.emplace_back(IngameID, stats);
-				}
-				
-				// update database player stats
-				m_pRankingServer->SetRanking(Nickname, stats, GetDatabasePrefix());
-			}, 
-			GetDatabasePrefix());
+
+            // stats are valid by default
+            CPlayerStats ingameStats;
+
+            if (!pIngamePlayer) {
+                // player stats are invalid because player is offline
+                ingameStats.Invalidate();
+            } else {
+                // player stats are valid
+                ingameStats["Kills"] = pIngamePlayer->m_Kills;
+                ingameStats["Deaths"] = pIngamePlayer->m_Deaths;
+                ingameStats["TicksCaught"] = pIngamePlayer->m_TicksCaught;
+                ingameStats["TicksIngame"] = pIngamePlayer->m_TicksIngame;
+                ingameStats["TicksWarmup"] = pIngamePlayer->m_TicksWarmup;
+                ingameStats["Score"] = pIngamePlayer->m_Score;
+                ingameStats["Wins"] = pIngamePlayer->m_Wins;
+                ingameStats["Fails"] = pIngamePlayer->m_Fails;
+                ingameStats["Shots"] = pIngamePlayer->m_Shots;
+            }
+
+            // requires individual player data
+            m_pRankingServer->GetRanking(
+                    Nickname,
+                    [this, IngameID, ingameStats, Type, Nickname](CPlayerStats &stats) {
+                        // ingame stats are more up to date compared to database stats
+                        if (ingameStats.IsValid()) {
+                            stats = ingameStats;
+                        }
+
+                        // manipulate player's stats
+                        switch (Type) {
+                            case CRankDeletionRequest::SCORE_AND_WIN_RESET:
+                                stats["Wins"] = 0;
+                                [[fallthrough]];
+                            case CRankDeletionRequest::SCORE_RESET:
+                                stats["Score"] = 0;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        // update ingame player's stats if online
+                        if (IngameID >= 0) {
+                            // do not add, but explicitly set values.
+                            stats.SetHandlingMode(CPlayerStats::STATS_UPDATE_SET);
+                            std::lock_guard <std::mutex> lock(m_RankingRetrievalMessageQueueMutex);
+                            m_RankingRetrievalMessageQueue.emplace_back(IngameID, stats);
+                        }
+
+                        // update database player stats
+                        m_pRankingServer->SetRanking(Nickname, stats, GetDatabasePrefix());
+                    },
+                    GetDatabasePrefix());
+        }
 
 	});
 }
@@ -814,7 +829,8 @@ void CGameControllerZCATCH::DoWincheckRound()
 			if(m_pRankingServer)
 			{
 				// player that is alive is the winnner
-				int ScorePointsEarned = CalculateScore(pAlivePlayer->GetNumTotalCaughtPlayers());
+				// int ScorePointsEarned = CalculateScore(pAlivePlayer->GetNumTotalCaughtPlayers());
+                int ScorePointsEarned = ceil(g_Config.m_SvWinScore * pow(pAlivePlayer->GetNumTotalCaughtPlayers(), 1.5));
 
 				pAlivePlayer->m_Score += ScorePointsEarned;
 				pAlivePlayer->m_Wins++;

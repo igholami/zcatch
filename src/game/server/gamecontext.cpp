@@ -2439,6 +2439,8 @@ void CGameContext::ConPunishedPlayers(IConsole::IResult *pResult, void *pUserDat
 }
 
 // Only works in zCatch, as only registered for zCatch
+// TODO: FULL RESTS GAME
+
 void CGameContext::ConRankReset(IConsole::IResult *pResult, void *pUserData)
 {
 	CGameContext *pSelf = (CGameContext*)pUserData;
@@ -2447,13 +2449,13 @@ void CGameContext::ConRankReset(IConsole::IResult *pResult, void *pUserData)
 
 	int ClientID = pResult->GetInteger(0);
 
-	if(!pSelf->m_apPlayers[ClientID])
+	if(ClientID != -1 && !pSelf->m_apPlayers[ClientID])
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "ranking", "Invalid ID!");
 		return;
 	}
 
-	std::string Nickname = std::string(pServer->ClientName(ClientID));
+	std::string Nickname = ClientID >= 0 ? std::string(pServer->ClientName(ClientID)) : "_ALL_";
 	
 	pControllerZCATCH->m_DeletionRequest.RequestDeletion(
 		CRankDeletionRequest::DeletionType::SCORE_AND_WIN_RESET, 
