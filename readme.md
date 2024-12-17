@@ -8,12 +8,18 @@ zCatch is a game server modification for the retro-multiplayergame Teeworlds. It
 
 Introduced new server commands
 ------------------------------
-| Command             | default      | min | max | Description                                                                                    |
-|---------------------|--------------|-----|-----|------------------------------------------------------------------------------------------------|
-| sv_weapon_mode      | 3            | 0   | 6   | 0: Hammer 1: Gun 2: Shotgun 3: Grenade Launcher 4: Laser Rifle 5: Ninja 6: Everything          |
-| sv_db_type          | ""           |     |     | ""(no ranking), "redis" or "sqlite"                                                            |
-| sv_db_sqlite_file   | "ranking.db" |     |     | Relative path to the sqlite3 database file.                                                    |
-| sv_warmup_autostart | 1            | 0   | 1   | Whether warmup should automatically start if there are not enough players to end a round.      |
+| Command             | default      | min | max        | Description                                                                               |
+|---------------------|--------------|-----|------------|-------------------------------------------------------------------------------------------|
+| sv_weapon_mode      | 3            | 0   | 6          | 0: Hammer 1: Gun 2: Shotgun 3: Grenade Launcher 4: Laser Rifle 5: Ninja 6: Everything     |
+| sv_db_type          | ""           |     |            | ""(no ranking), "redis" or "sqlite"                                                       |
+| sv_db_sqlite_file   | "ranking.db" |     |            | Relative path to the sqlite3 database file.                                               |
+| sv_warmup_autostart | 1            | 0   | 1          | Whether warmup should automatically start if there are not enough players to end a round. |
+| sv_players_to_start | 5            | 0   | MAX_CLIENT | Number of joined players to start the game.                                               |        
+| sv_kill_score       | 1            | 0   | 100        | Score points for killing a player.                                                        |
+| sv_win_score        | 1            | 0   | 100        | Score points for winning a round.                                                         |
+| sv_death_score      | 1            | 0   | 100        | Score points for dying.                                                                   |
+| sv_kill_increasing  | 1            | 0   | 1          | Whether the score points for killing a player should increase with each catch.            |
+| sv_suicide_penalty  | 5            | 0   | 100        | Score you loose if you kill yourself                                                      |
   
 More commands can be found in the example configuration file in the **[wiki](https://github.com/jxsl13/zcatch/wiki/Server-configuration-example)**.
 
